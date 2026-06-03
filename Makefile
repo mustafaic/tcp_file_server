@@ -1,5 +1,5 @@
 CC      = gcc
-CFLAGS  = -Wall -Wextra -O2 -D_POSIX_C_SOURCE=200809L
+CFLAGS  = -Wall -Wextra -O2 -D_GNU_SOURCE
 LDFLAGS = -lpthread
 
 .PHONY: all clean
