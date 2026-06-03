@@ -26,6 +26,7 @@
 #include <signal.h>
 #include <stdarg.h>
 #include <time.h>
+#include <strings.h>
 
 #include <pthread.h>
 #include <sys/socket.h>
