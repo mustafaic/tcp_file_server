@@ -195,24 +195,3 @@ Her `GET` ve `PUT` işlemi sunucu logunda aktarım hızını raporlar:
 
 ---
 
-## Karşılaşılan Problemler
-
-### Problem 1: TCP Paket Birleşmesi (Nagle Algoritması)
-**Eski yaklaşım:** Dosya verisi sonuna `"EOF"` bayt dizisi eklenerek gönderiliyordu. TCP katmanı paketleri birleştirebileceğinden `"EOF"` bazen dosya verisiyle aynı pakette geliyordu; bunun için `usleep(1000)` ile yapay gecikme eklenmiş, bu da güvenilir değildi.
-
-**Çözüm:** Protokol uzunluk-önekli hale getirildi. `PUT dosya.txt 1048576\n` komutuyla boyut önceden bildirilir; sunucu ve istemci tam olarak bu kadar bayt okur. EOF işaretçisine, `usleep` gecikmesine ve bayt karşılaştırmasına gerek kalmaz.
-
-### Problem 2: LIST Komutunda Tampon Taşması
-**Eski yaklaşım:** Tüm dosya adları 1024 baytlık sabit bir tampona `strcat()` ile biriktiriliyordu. Çok sayıda dosyada yığın (stack) taşması riski vardı.
-
-**Çözüm:** Dizin iki kez taranır: önce dosya sayısı hesaplanıp `OK <n>` başlığı gönderilir, ardından her dosya adı tek tek satır olarak gönderilir. Bellek kullanımı sabittir.
-
-### Problem 3: Yetersiz Dosya Adı Güvenlik Kontrolü
-**Eski yaklaşım:** Yalnızca `"../"` ve `"/"` içeren dizgeler reddediliyordu. `"..\"`, `".."` gibi varyantlar geçebiliyordu.
-
-**Çözüm:** `is_valid_filename()` her karakteri teker teker inceler: `/`, `\`, ASCII < 32 olanlar ve `".."` alt dizgesi reddedilir. Tüm path traversal varyantları engellenir.
-
-### Problem 4: Eksik Hata Kontrolü
-**Eski yaklaşım:** `bind()` ve `listen()` hata dönüşleri kontrol edilmiyordu; port meşgulse sunucu sessizce devam ediyordu.
-
-**Çözüm:** Tüm kritik sistem çağrılarının dönüş değeri kontrol edilir, hata durumunda `perror()` ile açıklama yapılır ve program sonlanır.
