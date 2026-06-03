@@ -21,6 +21,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <stdarg.h>
+#include <string.h>
 
 #include <sys/socket.h>
 #include <sys/stat.h>
